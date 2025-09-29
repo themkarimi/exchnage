@@ -1,0 +1,42 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  retry: 2
+  variables:
+    VERSION: "$CI_PIPELINE_IID"
+  tags:
+    - docker-runner
+  script:
+    - docker build -t my.repo.com/exchange:$VERSION . --push
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+      changes: 
+        - Dockerfile
+        - Exchange/**
+        - requirements.txt
+
+deploy:
+  stage: deploy
+  when: manual
+  tags:
+    - shell-runner
+  variables:
+    PROJECT_DIR: "services/exchange/"
+    DEPLOYMENT_FILE: "exchange.yaml"
+  script:
+    - git clone https://my.repo.com/devops.git
+    - cd $PROJECT_DIR
+    - sed -i "s|my.repo.com/exchange:.*|my.repo.com/exchange:$VERSION|g" ${DEPLOYMENT_FILE}
+    - git commit -am "Deploy exchange version $VERSION"
+    - git push
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+      changes: 
+        - Dockerfile
+        - Exchange/**
+        - requirements.txt

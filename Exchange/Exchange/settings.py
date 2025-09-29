@@ -28,7 +28,7 @@ SECRET_KEY = "0U18qVJY2NRwClsEszGV_SBoPKB4-oHP0t3EP418tN4"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '[*]'
 
 # Application definition
 
@@ -137,8 +137,23 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+# Storage Backend Configuration
+USE_MINIO = os.getenv('USE_MINIO', 'False').lower() == 'true'
+
+if USE_MINIO:
+    # MinIO Configuration
+    MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT', 'localhost:9000')
+    MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY', 'minioadmin')
+    MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY', 'minioadmin')
+    MINIO_BUCKET_NAME = os.getenv('MINIO_BUCKET_NAME', 'crypto-exchange')
+    MINIO_USE_SSL = os.getenv('MINIO_USE_SSL', 'False').lower() == 'true'
+    
+    # Media URL for MinIO
+    MEDIA_URL = f"http{'s' if MINIO_USE_SSL else ''}://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/"
+else:
+    # Local Storage (Default)
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

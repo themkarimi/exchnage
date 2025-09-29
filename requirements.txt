@@ -1,0 +1,15 @@
+Django==3.1.14
+bitcoin==1.1.42
+web3==6.15.1
+eth-account==0.10.0
+dotenv
+pillow
+setuptools
+djangorestframework
+django_extensions
+django_q
+plotly
+django-credit-cards
+gunicorn
+psycopg2-binary
+minio
