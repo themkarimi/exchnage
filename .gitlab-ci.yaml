@@ -19,18 +19,22 @@ build:
         - Exchange/**
         - requirements.txt
 
-deploy:
+deploy(exchange):
   stage: deploy
   when: manual
   tags:
     - shell-runner
   variables:
     PROJECT_DIR: "services/exchange/"
-    DEPLOYMENT_FILE: "exchange.yaml"
+    DEPLOYMENT_FILE1: "exchange.yaml"
+    DEPLOYMENT_FILE2: "db-migration.yaml"
+    DEPLOYMENT_FILE3: "exchange-django-q.yaml"
   script:
     - git clone https://my.repo.com/devops.git
     - cd $PROJECT_DIR
-    - sed -i "s|my.repo.com/exchange:.*|my.repo.com/exchange:$VERSION|g" ${DEPLOYMENT_FILE}
+    - sed -i "s|your-registry/exchange:.*|your-registry/exchange:$VERSION|g" ${DEPLOYMENT_FILE1}
+    - sed -i "s|your-registry/exchange:.*|your-registry/exchange:$VERSION|g" ${DEPLOYMENT_FILE2}
+    - sed -i "s|your-registry/exchange:.*|your-registry/exchange:$VERSION|g" ${DEPLOYMENT_FILE3}
     - git commit -am "Deploy exchange version $VERSION"
     - git push
   rules:
