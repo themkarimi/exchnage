@@ -10,8 +10,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 
-# Create non-root user early
-RUN adduser --system --no-create-home --uid 1001 nonroot
 
 # Copy requirements first for better caching
 COPY requirements.txt .
@@ -19,9 +17,9 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
 
-COPY --chown=nonroot:nogroup . .
+COPY  . .
 
-USER nonroot
+RUN python Exchange/manage.py collectstatic --noinput
 
 # Add the missing CMD instruction
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--chdir", "Exchange", "Exchange.wsgi:application"]

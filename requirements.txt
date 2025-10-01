@@ -13,3 +13,4 @@ django-credit-cards
 gunicorn
 psycopg2-binary
 minio
+whitenoise
